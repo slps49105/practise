@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - practise</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="~/js/javascript.js"></script>
+    <script src="~/js/selector.js"></script>
+    <link rel="stylesheet" href="~/css/dycalendar.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/practise.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site2.css" asp-append-version="true" />
+</head>
+<body>
+    <header class ="header vh3">
+        <div class="header-logo">TDL</div>
+        <div class="header-list">
+            <ul class="header-list-ul">
+                <li>
+                    <a href="profile.php"><img src="img/person-fill-gear.svg">檔案</a>
+                </li>
+                <li class="logout">
+                    <a href="logout.php"><img src="img/box-arrow-right.svg">登出</a>
+                </li>
+                <li class="login">
+                    <a href="Login"><img src="img/box-arrow-right.svg">登入</a>
+                </li>
+            </ul>
+        </div>
+    </header>
+    <div class="content">
+        <img src="img/螢幕擷取畫面 2024-09-23 145547.png" class="content-img">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - practise - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

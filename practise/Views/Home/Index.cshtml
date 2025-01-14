@@ -1,0 +1,74 @@
+﻿@model IEnumerable<DailyContext>
+
+<div id="dycalendar"></div>
+<script src="js/dycalendar.js"></script>
+<script>
+    dycalendar.draw({
+        target: '#dycalendar',
+    });
+</script>
+<div id="clock"></div>
+<div class="content-main">
+    <div class="content-title">To Do List</div>
+    <div class="content-main-line">
+        <div class="content-main-line-bar">
+        </div>
+    </div>
+    <div class="content-main-list">
+        <ul class="content-main-ul">
+            <li class="daily dy">Daily</li>
+            <li class="weekly wy">Weekly</li>
+            <li class="monthly my">Monthly</li>
+            <li class="irregularly iy">Irregularly</li>
+        </ul>
+    </div>
+    <div id="mycalendar"></div>
+    <script>
+        dycalendar.draw({
+            target: '#mycalendar',
+            type: 'month',
+            highlighttargetdate: true,
+            prevnextbutton: 'show'
+        });
+    </script>
+    <div class="hidden day W M I content-main-checkboxs">
+        @foreach (var data in Model)
+        {
+            var dailyId = $"daily{data.Id}";
+            <div class="item" data-daily-id="@data.Id">
+                <input type="checkbox" id="@dailyId" data-daily-id="@data.Id" class="checked" @data.ItemStatus>
+                <label for="@dailyId" class="labels">
+                    @data.ItemName
+                </label>
+                <a class="update" data-daily-id="@data.Id" value="更新"><img class="pencil-square" src="~/img/pencil-square.svg"></a>
+                <a class="delete" data-daily-id="@data.Id" value="刪除"><img class="trath" src="~/img/trash.svg"></a>
+            </div>
+        }
+        <div id="itemContainer">
+            <button id="addItemBtn">Add Item</button>
+            <div id="inputSection" style="display: none;">
+                <input type="text" id="itemInput" placeholder="Enter item name">
+                <button id="confirmBtn">Confirm</button>
+                <button id="cancelBtn">Cancel</button>
+            </div>
+        </div>
+        <script>
+            $(document).ready(function() {
+                $(".checked").change(function () {
+                    var id = $(this).data("daily-id");
+                    if (this.checked) {
+                        StatusSel("/Home/Checked",id,"checked");
+                    }else {
+                        StatusSel("/Home/Checked",id,"");
+                    }
+                });
+
+                $(".delete").on("click",function(){
+                    var id = $(this).data("daily-id");
+                    StatusSel("/Home/Delete",id);
+                    $(`div[data-daily-id="${id}"]`).remove();
+                });
+            });
+        </script>
+    </div>
+</div>
