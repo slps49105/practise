@@ -1,5 +1,36 @@
-﻿@model IEnumerable<DailyContext>
+﻿@model List<DailyContext>
 
+<script src="~/js/javascript.js"></script>
+<script src="~/js/selector.js"></script>
+<link rel="stylesheet" href="~/css/dycalendar.css" />
+<link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+<script>
+    // 建立 SignalR 連線
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/checkboxHub")  // ✅ 確保這裡的路徑與 `Program.cs` 一致
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
+
+    // 連線到 SignalR
+    connection.start()
+        .then(() => console.log("✅ SignalR 已連線"))
+        .catch(err => console.error("❌ SignalR 連線失敗:", err.toString()));
+
+    // 監聽伺服器的 Checkbox 變更
+    connection.on("ReceiveItemStatusUpdate", function (dailyId, itemStatus) {
+        console.log("✅ 收到更新:", { dailyId, itemStatus });
+
+        // 更新對應的 Checkbox
+        let checkbox = $(`input[data-daily-id="${dailyId}"]`);
+        if (checkbox.length) {
+            checkbox.prop("checked", itemStatus !== "Pending");
+        } else {
+            console.warn("⚠️ 找不到對應的 checkbox", dailyId);
+        }
+    });
+
+</script>
 <div id="dycalendar"></div>
 <script src="js/dycalendar.js"></script>
 <script>
@@ -16,10 +47,9 @@
     </div>
     <div class="content-main-list">
         <ul class="content-main-ul">
-            <li class="daily dy">Daily</li>
-            <li class="weekly wy">Weekly</li>
-            <li class="monthly my">Monthly</li>
-            <li class="irregularly iy">Irregularly</li>
+            <li class="tab-btn" data-target="daily">Daily</li>
+            <li class="tab-btn" data-target="weekly">Weekly</li>
+            <li class="tab-btn" data-target="monthly">Monthly</li>
         </ul>
     </div>
     <div id="mycalendar"></div>
@@ -31,44 +61,9 @@
             prevnextbutton: 'show'
         });
     </script>
-    <div class="hidden day W M I content-main-checkboxs">
-        @foreach (var data in Model)
-        {
-            var dailyId = $"daily{data.Id}";
-            <div class="item" data-daily-id="@data.Id">
-                <input type="checkbox" id="@dailyId" data-daily-id="@data.Id" class="checked" @data.ItemStatus>
-                <label for="@dailyId" class="labels">
-                    @data.ItemName
-                </label>
-                <a class="update" data-daily-id="@data.Id" value="更新"><img class="pencil-square" src="~/img/pencil-square.svg"></a>
-                <a class="delete" data-daily-id="@data.Id" value="刪除"><img class="trath" src="~/img/trash.svg"></a>
-            </div>
-        }
-        <div id="itemContainer">
-            <button id="addItemBtn">Add Item</button>
-            <div id="inputSection" style="display: none;">
-                <input type="text" id="itemInput" placeholder="Enter item name">
-                <button id="confirmBtn">Confirm</button>
-                <button id="cancelBtn">Cancel</button>
-            </div>
-        </div>
-        <script>
-            $(document).ready(function() {
-                $(".checked").change(function () {
-                    var id = $(this).data("daily-id");
-                    if (this.checked) {
-                        StatusSel("/Home/Checked",id,"checked");
-                    }else {
-                        StatusSel("/Home/Checked",id,"");
-                    }
-                });
-
-                $(".delete").on("click",function(){
-                    var id = $(this).data("daily-id");
-                    StatusSel("/Home/Delete",id);
-                    $(`div[data-daily-id="${id}"]`).remove();
-                });
-            });
-        </script>
+    <div class="content-main-checkboxs tab-content-container daily">
+        @await Html.PartialAsync("_DailyPartial", Model)
+    </div>
+    <div class="content-main-checkboxs tab-content-container weekly" style="display:none;">
     </div>
 </div>

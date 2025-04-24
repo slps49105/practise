@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using practise.data;
@@ -19,9 +20,36 @@ namespace practise.Controllers
 
         public IActionResult Index()
         {
-            var Daily = _context.Daily.ToList();
+            string? userName = User.FindFirst(ClaimTypes.Name)?.Value;
+            if (string.IsNullOrEmpty(userName))
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
-            return View(Daily);
+            ViewBag.UserName = userName;
+            var dailyItems = _context.Daily.Where(d => d.UserName == userName).ToList();
+            return View(dailyItems);
+        }
+
+        public IActionResult GetData(string type)
+        {
+            string? userName = User.FindFirst(ClaimTypes.Name)?.Value;
+            if (string.IsNullOrEmpty(userName))
+            {
+                return Content("請先登入");
+            }
+
+            switch (type)
+            {
+                case "daily":
+                    var dailyItems = _context.Daily.Where(d => d.UserName == userName).ToList();
+                    return PartialView("_DailyPartial", dailyItems); // 返回 PartialView 的 HTML
+
+                case "weekly":
+                    var weeklyItems = _context.Weekly.Where(d => d.UserName == userName).ToList();
+                    return PartialView("_WeeklyPartial", weeklyItems);
+            }
+            return Content("沒有資料");
         }
 
         //[FromBody]將獲取資料的方式改為Ajax
@@ -52,8 +80,17 @@ namespace practise.Controllers
                 return BadRequest("Item name cannot be empty.");
             }
 
-            //SQL:INSERT INTO Daily (Id, ItemName, ItemStatus, UserName)
-            //VALUES(@Id, @ItemName, @ItemStatus, @UserName);
+            string? userName = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
+
+            if (string.IsNullOrEmpty(userName))
+            {
+                return Unauthorized("User is not logged in.");
+            }
+
+            newItem.UserName = userName;
+
+            //SQL:INSERT INTO Daily (Id, ItemName, ItemStatus, UserName ,ResetTime)
+            //VALUES(@Id, @ItemName, @ItemStatus, @UserName, @ResetTime);
             _context.Daily.Add(newItem);
             _context.SaveChanges();
 
@@ -88,11 +125,23 @@ namespace practise.Controllers
                 return NotFound("Record not found.");
             }
 
+            if (daily.ItemName == updatedDaily.ItemName && daily.ResetTime == updatedDaily.ResetTime)
+            {
+                return Ok("No changes detected.");
+            }
+
             //SQL:UPDATE Daily SET ItemStatus = @updatedDaily.ItemStatus WHERE Id = @Id;
             daily.ItemName = updatedDaily.ItemName;
-            _context.SaveChanges();
-
-            return Ok("Item updated successfully.");
+            daily.ResetTime = updatedDaily.ResetTime;
+            try
+            {
+                _context.SaveChanges();
+                return Ok("Item updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Database update failed: " + ex.Message);
+            }
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

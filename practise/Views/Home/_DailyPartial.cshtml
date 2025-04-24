@@ -1,0 +1,41 @@
+﻿@model IEnumerable<DailyContext>
+@foreach (var data in Model)
+{
+    var dailyId = $"daily{data.Id}";
+    <div class="item" data-daily-id="@data.Id">
+        <input type="checkbox" id="@dailyId" data-daily-id="@data.Id" class="checked" @data.ItemStatus>
+        <label for="@dailyId" class="labels">
+            <span class="item-name">@data.ItemName</span> &ensp;
+            <span class="timespan">@(data.ResetTime.ToString(@"hh\:mm"))</span>
+        </label>
+        <a class="update" data-daily-id="@data.Id" value="更新"><img class="pencil-square" src="~/img/pencil-square.svg"></a>
+        <a class="delete" data-daily-id="@data.Id" value="刪除"><img class="trath" src="~/img/trash.svg"></a>
+    </div>
+}
+<div id="itemContainer">
+    <button id="addItemBtn">Add Item</button>
+    <div id="inputSection" style="display: none;">
+        <input type="text" id="itemInput" placeholder="Enter item name">
+        <input type="time" id="resetTime" placeholder="Enter reset time">
+        <button id="confirmBtn">Confirm</button>
+        <button id="cancelBtn">Cancel</button>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $(".checked").change(function () {
+            var id = $(this).data("daily-id");
+            if (this.checked) {
+                StatusSel("/Home/Checked",id,"checked");
+            }else {
+                StatusSel("/Home/Checked",id,"");
+            }
+        });
+
+        $(".delete").on("click",function(){
+            var id = $(this).data("daily-id");
+            StatusSel("/Home/Delete",id);
+            $(`div[data-daily-id="${id}"]`).remove();
+        });
+    });
+</script>

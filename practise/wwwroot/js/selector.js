@@ -1,4 +1,5 @@
-﻿function StatusSel(UrlSel, DataId, DataItemStatus) {
+﻿//CheckBox狀態選擇
+function StatusSel(UrlSel, DataId, DataItemStatus) {
     $.ajax({
         type: "POST",
         url: UrlSel,
@@ -15,3 +16,4 @@
         },
     });
 }
+

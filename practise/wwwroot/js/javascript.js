@@ -1,21 +1,9 @@
 ﻿$(function () {
+
     $('.hidden').hide();
     $('.day').show();
     $(".content-main").addClass("dy");
     $(".add").addClass("dyadd");
-
-    $('.daily').on("click", function () {
-        contentSel("dy", "wy my iy", "dyadd", "wyadd myadd iyadd", ".day", ".D")
-    });
-    $('.weekly').on("click", function () {
-        contentSel("wy", "dy my iy", "wyadd", "dyadd myadd iyadd", ".week", ".W")
-    });
-    $('.monthly').on("click", function () {
-        contentSel("my", "dy wy iy", "myadd", "dyadd wyadd iyadd", ".month", ".M")
-    });
-    $('.irregularly').on("click", function () {
-        contentSel("iy", "dy wy my", "iyadd", "dyadd wyadd myadd", ".irregular", ".I")
-    });
 
     $(".content-main").on('click', ".dyadd, .wyadd, .myadd", function () {
         const className = $(this).attr("class").split(' ')[1]; // this為被點擊的對象,attr("class")取得該對象的所有class,split把每個class用空格做區隔,[1]選擇第二個class(0為第一個，以此類推)
@@ -75,13 +63,16 @@
     // 點擊 "Confirm" 發送 AJAX 請求
     $("#confirmBtn").on("click", function () {
         var itemName = $("#itemInput").val();
-        console.log(itemName);
+        var resettime = $("#resetTime").val();
+        let resetTime = resettime + ":00";
+        console.log(resetTime);
         $.ajax({
             type: "POST",
             url: "/Home/Create",
             contentType: "application/json",
             data: JSON.stringify({
-                ItemName: itemName
+                ItemName: itemName,
+                ResetTime: resetTime
             }),
             success: function (response) {
                 console.log("Data sent successfully:", response);
@@ -101,12 +92,14 @@
         if ($item.find(".edit-input").length > 0) return;
 
         // 獲取原始值
-        var originalValue = $item.find("label").text().trim();
+        var originalItemName = $item.find(".item-name").text().trim();
+        var originalResetTime = $item.find(".timespan").text().trim();
 
         // 動態生成 input 和按鈕
         var editHtml = `
         <div class="edit-container">
-            <input type="text" class="edit-input" value="${originalValue}" />
+            <input type="text" class="edit-itemName" value="${originalItemName}" />
+            <input type="time" class="edit-resetTime" value="${originalResetTime}" />
             <button class="confirm-btn" data-daily-id="${dailyId}">Confirm</button>
             <button class="cancel-btn">Cancel</button>
         </div>
@@ -121,31 +114,46 @@
     $(document).on("click", ".confirm-btn", function () {
         var dailyId = $(this).data("daily-id");
         var $item = $(this).closest(".item");
-        var newValue = $item.find(".edit-input").val().trim();
-
-        if (!newValue) {
-            alert("Value cannot be empty.");
-            return;
-        }
+        var newItemName = $item.find(".edit-itemName").val().trim();
+        var newResetTime = $item.find(".edit-resetTime").val().trim();
 
         // 發送 AJAX 更新資料
         $.ajax({
             type: "POST",
-            url: "/Home/Update", // 假設此為後端的更新方法
+            url: "/Home/Update",
             contentType: "application/json",
             data: JSON.stringify({
                 Id: dailyId,
-                ItemName: newValue
+                ItemName: newItemName,
+                ResetTime: newResetTime
             }),
             success: function () {
                 // 更新成功後顯示新值
-                $item.find("label").text(newValue).show();
-                $item.find("input, a").show();
+                $item.find(".item-name").text(newItemName);
+                $item.find(".timespan").text(newResetTime);
+                $item.find("label, input, a").show();
                 $item.find(".edit-container").remove();
             },
             error: function () {
                 alert("Failed to update.");
             },
+        });
+    });
+
+    $(".tab-btn").on("click", function () {
+        var target = $(this).data("target");
+        $.get("/Home/GetData", { type: target }, function (res) {
+            // 先清空所有 tab 區塊內容
+            $(".tab-content-container").html("");
+
+            // 塞入資料到目標區塊
+            $("." + target).html(res);
+
+            // 隱藏所有
+            $(".tab-content-container").hide();
+
+            // 顯示目標區塊
+            $("." + target).show();
         });
     });
 
@@ -168,8 +176,10 @@
     setInterval(() => {
         const now = new Date();
         document.getElementById('clock').textContent = now.toLocaleTimeString();
+
         if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) {
             location.reload();
         }
     }, 1000);
+
 })

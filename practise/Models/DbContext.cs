@@ -7,7 +7,8 @@ namespace practise.data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<HomeContext> Test1 { get; set; }
         public DbSet<DailyContext> Daily { get; set; }
+        public DbSet<NonDailyContext> Weekly { get; set; }
+        public DbSet<MemberContext> Member { get; set; }
     }
 }

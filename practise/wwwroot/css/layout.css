@@ -1,0 +1,161 @@
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px black;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ffffff;
+    border-radius: 10px;
+}
+
+label {
+    user-select: none;
+    margin-bottom: 2px;
+    font-size: 18pt;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 190vh;
+}
+
+li {
+    list-style-type: none;
+}
+
+.vh3 {
+    margin-top: 3vh;
+}
+
+.header {
+    position: fixed;
+    display: flex;
+    background: rgba(255, 255, 255, 0);
+    width: 100%;
+    top: -3vh;
+    height: 10vh;
+    transition: margin-top 0.2s, background-color 0.3s;
+    z-index: 10;
+}
+
+.white {
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.item {
+    display: flex;
+    gap: 10px;
+}
+
+    .item label {
+        display: flex;
+    }
+
+.header-logo {
+    position: absolute;
+    font-size: 24pt;
+    font-weight: bolder;
+    left: 20%;
+    margin-top: 3.8vh;
+}
+
+    .header-logo a {
+        text-decoration: none;
+        color: rgb(0, 0, 0);
+    }
+
+.header-list {
+    position: absolute;
+    display: flex;
+    right: 20%;
+    margin-top: 4.8vh;
+    align-items: center;
+}
+
+.header-list-ul {
+    display: flex;
+    margin: 0;
+    gap: 20px;
+}
+
+.header-list a {
+    font-size: 16pt;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgb(0,0,0);
+    font-weight: 600;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.header-profile {
+    position: absolute;
+    right: calc(3% + 15px);
+    font-size: 16pt;
+    font-weight: bolder;
+    margin: 4vh 0 0 20%;
+    color: rgb(0, 0, 0);
+}
+
+.header-menu {
+    position: absolute;
+    top: calc(100% + 20px);
+    right: 3%;
+    width: 110px;
+    min-height: 10px;
+    background: white;
+    display: none;
+}
+
+    .header-menu ul {
+        position: relative;
+        z-index: 10;
+        background: white;
+        padding: 5px;
+        margin: 0;
+    }
+
+        .header-menu ul li {
+            list-style: none;
+            padding: 8px 10px;
+        }
+
+            .header-menu ul li:hover {
+                background: #f5f5f5;
+            }
+
+            .header-menu ul li a {
+                text-decoration: none;
+                display: flex;
+                gap: 7px;
+            }
+
+    .header-menu::before {
+        content: '';
+        position: absolute;
+        top: -8px;
+        right: 25px;
+        width: 20px;
+        height: 20px;
+        background: white;
+        transform: rotate(45deg);
+    }
+
+
+.content {
+    position: relative;
+}
+
+.content-img {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.register {
+    position: absolute;
+    z-index: 1000;
+}
