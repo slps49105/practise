@@ -23,6 +23,7 @@ Entity Framework Core
 SQL Server (含 Agent 定時排程)
 
 SignalR (即時雙向通訊)
+<img width="274" height="233" alt="image" src="https://github.com/user-attachments/assets/1d728077-0ec4-4796-92b6-3bcf29abf5ac" />
 
 jQuery (前端互動)
 
